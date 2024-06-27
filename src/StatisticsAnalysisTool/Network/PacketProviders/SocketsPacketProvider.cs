@@ -5,6 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Threading.Tasks;
 using Serilog;
 using StatisticsAnalysisTool.Common;
 
@@ -98,7 +99,8 @@ public class SocketsPacketProvider : PacketProvider
             if (protocol != 17)
             {
                 _byteData = new byte[65000];
-                socket?.BeginReceive(_byteData, 0, _byteData.Length, SocketFlags.None, OnReceive, socket);
+                Task.Run(
+                    () => socket?.BeginReceive(_byteData, 0, _byteData.Length, SocketFlags.None, OnReceive, socket));
                 return;
             }
 
@@ -134,7 +136,7 @@ public class SocketsPacketProvider : PacketProvider
 
         if (!_stopReceiving)
         {
-            socket?.BeginReceive(_byteData, 0, _byteData.Length, SocketFlags.None, OnReceive, socket);
+            Task.Run(() => socket?.BeginReceive(_byteData, 0, _byteData.Length, SocketFlags.None, OnReceive, socket));
         }
     }
     
